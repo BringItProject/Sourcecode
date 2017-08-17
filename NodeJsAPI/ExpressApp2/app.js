@@ -42,11 +42,14 @@ app.post('/products',data.addProduct);
 app.delete('/products/:id',data.deleteProduct);
 app.put('/products/:id', data.updateProduct);
 
-//app.get('/Bringer', data.getBringerJob);
-app.get('/Bringer/:BringerID', data.getBringerJob);
-app.post('/BringerJob', data.addBringerJob);
+app.get('/BringerCurrentJob', data.getBringerCurrentJob);
+app.post('/BringerCurrentJob', data.addBringerCurrentJob);
 
+app.get('/BringerJobDetail', data.getBringerJobDetail);
+app.post('/BringerJobDetail', data.addBringerJobDetail);
 
+app.get('/SenderCurrentJob', data.getSenderCurrentJob);
+app.post('/SenderCurrentJob', data.addSenderCurrentJob);
 
 
 

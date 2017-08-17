@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="JavaScript1.js">
+        
+    
+    </script>
+    <style>
+        #map {
+            height: 700px;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+
+</head>
+<body>
+    <h3>BringIT Demo</h3>
+    <div id="map"></div>
+    <div id="route1">Route 1 : </div>
+    <div id="route2">Route 2 : </div>
+    <div id="route3">Route 3 : </div>
+    <div id="route4">Route 4 : </div>
+
+    <script  type="text/javascript">
+        function initMap() {
+            //     //var uluru = { lat: -25.363, lng: 131.044 };
+            //     //var map = new google.maps.Map(document.getElementById('map'), {
+            //     //    zoom: 4,
+            //     //    center: uluru
+            //     //});
+            //     //var marker = new google.maps.Marker({
+            //     //    position: uluru,
+            //     //    map: map
+            //     //});
+
+            //var mapOptions = {
+            //             zoom: 16,
+            //             draggable: true,
+            //             center: {
+            //                 lat: 13.661146,
+            //                 lng: 100.662308
+            //             }
+            //         };
+
+            //         map = new google.maps.Map(document.getElementById('map'), mapOptions);
+            //         directionsService = new google.maps.DirectionsService();
+
+            //         loadRoute1();
+            //         loadRoute2();
+            //         loadRoute3();
+            //         loadRoute4();
+            loadMap();
+        }
+        alert("55555");
+        alert("a+b = " + add(50,20));
+     
+    </script>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCMflM-E8QrzzozUz6IZ2jKRBymrwgw9kE&callback=initMap">
+    </script>
+</body>
+</html>

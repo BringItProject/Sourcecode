@@ -31,8 +31,8 @@ exports.getBringerJob = function (req, res) {
     MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         
-        //var query = { BringerID: "B0001" };
-        var query = { BringerID: req.params.BringerID };
+        var query = { BringerID: "B0001" };
+        //var query = { BringerID: req.params.BringerID };
         db.collection("BringerCurrentJob").find(query).toArray(function (err, result) {
             if (err) throw err;
             return res.json(result);
