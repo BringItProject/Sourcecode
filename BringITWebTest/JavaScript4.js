@@ -1,6 +1,6 @@
 ﻿function initMap() {
 
-    initialLoad();  
+    //initialLoad();  
 }
 
 
@@ -23,7 +23,7 @@ function initialLoad() {
 
     var originPoint6 = document.getElementsByName('Sender6Start')[0].value;
     var destinationPoint6 = document.getElementsByName('Sender6End')[0].value;
-   
+
 
     var markerArray = [];
     var directionsService = new google.maps.DirectionsService;
@@ -49,10 +49,10 @@ function initialLoad() {
     var directionsService6 = new google.maps.DirectionsService;
     var stepDisplay6 = new google.maps.InfoWindow;
 
-        map = new google.maps.Map(document.getElementById('map'), {
+    map = new google.maps.Map(document.getElementById('map'), {
         zoom: 1,
         center: { lat: 13.661146, lng: 100.662308 }
-            });
+    });
 
     //********************************************************************
     var directionsDisplay = new google.maps.DirectionsRenderer({
@@ -63,17 +63,17 @@ function initialLoad() {
         },
         map: map
     });
-     //Display the route between the initial start and end selections.
+    //Display the route between the initial start and end selections.
 
     var waypoint = null;
 
     calculateAndDisplayRoute(
-        directionsDisplay, directionsService, markerArray, stepDisplay, originPoint, destinationPoint, waypoint, map, 'route1','Bringer','B9999','B-JID-0001');
+        directionsDisplay, directionsService, markerArray, stepDisplay, originPoint, destinationPoint, waypoint, map, 'route1', 'Bringer', 'B9999', 'B-JID-0001');
 
     //********************************************************************
     var directionsDisplay2 = new google.maps.DirectionsRenderer({ map: map });
 
-   
+
     calculateAndDisplayRoute(
         directionsDisplay2, directionsService2, markerArray2, stepDisplay2, originPoint2, destinationPoint2, waypoint, map, 'route2', 'Sender', 'S9999', 'S-JID-0001');
     //********************************************************************
@@ -131,16 +131,16 @@ function initialLoad() {
 
 
     // Listen to change events from the start and end lists.
-    var onChangeHandler = function() {
-      calculateAndDisplayRoute(
-          directionsDisplay, directionsService, markerArray, stepDisplay, map);
+    var onChangeHandler = function () {
+        calculateAndDisplayRoute(
+            directionsDisplay, directionsService, markerArray, stepDisplay, map);
     };
     //document.getElementById('start').addEventListener('change', onChangeHandler);
     //document.getElementById('end').addEventListener('change', onChangeHandler);
 }
 
 function calculateAndDisplayRoute(directionsDisplay, directionsService,
-    markerArray, stepDisplay, originPoint, destinationPoint, waypoint, map, routeName,type,ID,jobID) {
+    markerArray, stepDisplay, originPoint, destinationPoint, waypoint, map, routeName, type, ID, jobID) {
     // First, remove any existing markers from the map.
 
     for (var i = 0; i < markerArray.length; i++) {
@@ -160,32 +160,33 @@ function calculateAndDisplayRoute(directionsDisplay, directionsService,
         // Route the directions and pass the response to a function to create
         // markers for each step.
         if (status === 'OK') {
-            if (type == 'Bringer')
-            {
+            if (type == 'Bringer') {
                 AddBringerCurrentJob(ID, originPoint, destinationPoint, jobID);
-                
+
             }
-            else if ((type == 'Sender'))
-            {
+            else if ((type == 'Sender')) {
                 AddSenderCurrentJob(ID, originPoint, destinationPoint, jobID);
-                
+
             }
-            else
-            {
+            else {
                 alert("Add Bringer/Sender Error.");
             }
             showSteps(response, markerArray, stepDisplay, map, routeName, type, ID, jobID);
             directionsDisplay.setDirections(response);
         } else {
-           // window.alert('Directions request failed due to ' + status);
+            // window.alert('Directions request failed due to ' + status);
         }
-    });
+        });
+    alert("Calculate completed for " + type + " of " + jobID);
 }
 
 function showSteps(directionResult, markerArray, stepDisplay, map, routeName, type, ID, jobID) {
     var stepPointLat = [];
     var stepPointLng = [];
+    var bringerData = [];
+    var senderData = [];
     var j = 0;
+    var pointCount = 0;
 
     // For each step, place a marker, and add the text to the marker's infowindow.
     // Also attach the marker to an array so we can keep track of it and remove it
@@ -200,11 +201,59 @@ function showSteps(directionResult, markerArray, stepDisplay, map, routeName, ty
         //marker.setPosition(myRoute.steps[i].start_location);
         //attachInstructionText(
         //    stepDisplay, marker, myRoute.steps[i].instructions, map);
+        var dist = myRoute.steps[i].distance.value / myRoute.steps[i].lat_lngs.length
+        
+        for (var j = 0; j < myRoute.steps[i].lat_lngs.length; j++) {
 
-        stepPointLat[j] = myRoute.steps[i].start_location.lat();
-        stepPointLng[j] = myRoute.steps[i].start_location.lng();
-        j++;
-        //AddBringerJobDetail(BringerID, j, dist, stepPointLat[j], stepPointLng[j], JobID);
+            if (type == 'Bringer') {
+
+                    bringerData[pointCount] = {
+                        "Bringer": ID,
+                        "JobID": jobID,
+                        "legsNo": i,
+                        "pontSeq": j,
+                        "distance": dist,
+                        "loc": {
+                            "type": "Point",
+                            "coordinates": [
+                                myRoute.steps[i].lat_lngs[j].lng(),
+                                myRoute.steps[i].lat_lngs[j].lat()
+                            ]
+                        }
+                    };
+                    pointCount++;
+             }
+            else if ((type == 'Sender')) {
+                senderData[pointCount] = {
+                    "Sender": ID,
+                    "JobID": jobID,
+                    "legsNo": i,
+                    "pontSeq": j,
+                    "distance": dist,
+                    "loc": {
+                        "type": "Point",
+                        "coordinates": [
+                            myRoute.steps[i].lat_lngs[j].lng(),
+                            myRoute.steps[i].lat_lngs[j].lat()
+                        ]
+                    }
+                };
+                pointCount++;
+
+            }
+        }
+
+        if (type == 'Bringer') {
+            AddBringerJobDetail(bringerData);
+         
+        }
+        else if ((type == 'Sender')) {
+            AddSenderJobDetail(senderData);
+         
+        }
+        
+        
+
         // document.getElementById(routeName).innerHTML += myRoute.steps[i].start_location.lat() + "," + myRoute.steps[i].start_location.lng() + "<br />";
         document.getElementById(routeName).innerHTML += myRoute.steps[i].start_location.lat() + "," + myRoute.steps[i].start_location.lng() + "<br />";
 
@@ -222,9 +271,8 @@ function attachInstructionText(stepDisplay, marker, text, map) {
 }
 
 var Resultxx;
-function AddBringerCurrentJob(BringerID,StartPoint,StopPoint,JobID)
-{
-    alert("AddBringerCurrentJob");
+function AddBringerCurrentJob(BringerID, StartPoint, StopPoint, JobID) {
+    //alert("AddBringerCurrentJob");
     var xhr = new XMLHttpRequest();
     var url = "http://localhost:1337/BringerCurrentJob/";
     xhr.open("POST", url, true);
@@ -235,27 +283,24 @@ function AddBringerCurrentJob(BringerID,StartPoint,StopPoint,JobID)
             console.log(json.email + ", " + json.password);
         }
     };
-    //var data = JSON.stringify({ "email": "hey@mail.com", "password": "101010" });
-    var data = JSON.stringify({ "BringerID": BringerID, "StartPoint": StartPoint, "StopPointStoptLng": StopPoint, "Status": "ACTIVE", "ItemCount": 0, "JobID": JobID,"JobDate" : "20170800000000","JobDueDate" : "20170800000000"});
-
+    var bringerData =  ({ "BringerID": BringerID, "StartPoint": StartPoint, "StopPointStoptLng": StopPoint, "Status": "ACTIVE", "ItemCount": 0, "JobID": JobID, "JobDate": "20170800000000", "JobDueDate": "20170800000000" });
+    var data = JSON.stringify(bringerData);
     xhr.send(data);
 }
 
-function AddBringerJobDetail(BringerID, StartPoint, StopPoint, JobID) {
-    alert("Add BringerJob Detail");
+function AddBringerJobDetail(bringerData) {
+    //alert("Add BringerJob Detail");
     var xhr = new XMLHttpRequest();
     var url = "http://localhost:1337/BringerJobDetail/";
+       
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var json = JSON.parse(xhr.responseText);
-            console.log(json.email + ", " + json.password);
         }
     };
-    //var data = JSON.stringify({ "email": "hey@mail.com", "password": "101010" });
-    var data = JSON.stringify({ "BringerID": BringerID, "StartPoint": StartPoint, "StopPointStoptLng": StopPoint, "Status": "ACTIVE", "ItemCount": 0, "JobID": JobID, "JobDate": "20170800000000", "JobDueDate": "20170800000000" });
-
+    var data = JSON.stringify(bringerData);
     xhr.send(data);
 }
 
@@ -276,6 +321,22 @@ function AddSenderCurrentJob(SenderID, StartPoint, StopPoint, JobID) {
     xhr.send(data);
 }
 
+
+function AddSenderJobDetail(senderData) {
+    //alert("Add BringerJob Detail");
+    var xhr = new XMLHttpRequest();
+    var url = "http://localhost:1337/SenderJobDetail/";
+
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var json = JSON.parse(xhr.responseText);
+        }
+    };
+    var data = JSON.stringify(senderData);
+    xhr.send(data);
+}
 function FindBringer(BringerID) {
 
     var theUrl = 'http://localhost:1337/BringerCurrentJob/' + BringerID;
@@ -287,12 +348,55 @@ function FindBringer(BringerID) {
 
                 Resultxx = data;
                 alert('Your query data: ' + Resultxx);
-                
+
             }
         });
 
 }
 
+function DeletedAllData() {
+    var xhr = new XMLHttpRequest();
+    var url = "http://localhost:1337/SenderJobDetail/";
+    xhr.open("DELETE", url, true);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var json = JSON.parse(xhr.responseText);
+        }
+    };
+    var data = JSON.stringify({});
+    xhr.send(data);
+
+    url = "http://localhost:1337/BringerJobDetail/";
+    xhr.open("DELETE", url, true);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var json = JSON.parse(xhr.responseText);
+        }
+    };
+    xhr.send(data);
+
+    url = "http://localhost:1337/BringerCurrentJOb/";
+    xhr.open("DELETE", url, true);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var json = JSON.parse(xhr.responseText);
+        }
+    };
+    xhr.send(data);
+
+    url = "http://localhost:1337/SenderCurrentJOb/";
+    xhr.open("DELETE", url, true);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var json = JSON.parse(xhr.responseText);
+        }
+    };
+    xhr.send(data);
+}
 function FindSender(SenderID) {
 
     var theUrl = 'http://localhost:1337/SenderCurrentJob/' + SenderID;
@@ -323,5 +427,6 @@ var getJSON = function (url, callback) {
         }
     };
     xhr.send();
-};  
-  
+};
+
+

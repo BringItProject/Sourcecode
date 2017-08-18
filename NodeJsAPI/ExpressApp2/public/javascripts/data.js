@@ -45,7 +45,7 @@ exports.addBringerCurrentJob = function (req, res) {
         // var myobj = { name: "Company Inc", address: "Highway 37" };
         db.collection("BringerCurrentJob").insertOne(data, function (err, res) {
             if (err) throw err;
-            console.log("1 document inserted");
+            console.log("1 addBringerCurrentJob inserted");
             db.close();
         });
     });
@@ -74,13 +74,11 @@ exports.addSenderCurrentJob = function (req, res) {
         // var myobj = { name: "Company Inc", address: "Highway 37" };
         db.collection("SenderCurrentJob").insertOne(data, function (err, res) {
             if (err) throw err;
-            console.log("1 document inserted");
+            console.log("1 addSenderCurrentJob inserted");
             db.close();
         });
     });
 }
-
-
 
 exports.getBringerJobDetail = function (req, res) {
     MongoClient.connect(url, function (err, db) {
@@ -102,9 +100,9 @@ exports.addBringerJobDetail = function (req, res) {
     MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         // var myobj = { name: "Company Inc", address: "Highway 37" };
-        db.collection("BringerJobDetail").insertOne(data, function (err, res) {
+         db.collection("BringerJobDetail").insertMany(data, function (err, res) {
             if (err) throw err;
-            console.log("1 document inserted");
+            console.log("addBringerJobDetail inserted");
             db.close();
         });
     });
@@ -124,15 +122,65 @@ exports.getSenderJobDetail = function (req, res) {
     });
 };
 
+exports.deleteBringerJobDetail = function (req, res) {
+    var data = req.body;
+        MongoClient.connect(url, function (err, db) {
+        if (err) throw err;
+        db.collection("BringerJobDetail").deleteMany(data, function (err, res) {
+            if (err) throw err;
+            console.log("BringerJobDetail deleted!!");
+            db.close(); 
+        });
+    });
+}
+
+exports.deleteBringerCurrentJob = function (req, res) {
+    var data = req.body;
+    MongoClient.connect(url, function (err, db) {
+        if (err) throw err;
+        db.collection("BringerCurrentJob").deleteMany(data, function (err, res) {
+            if (err) throw err;
+            console.log("BringerCurrentJob deleted!!");
+            db.close();
+        });
+    });
+}
+
+exports.deleteSenderJobDetail = function (req, res) {
+    var data = req.body;
+    MongoClient.connect(url, function (err, db) {
+        if (err) throw err;
+        db.collection("SenderJobDetail").deleteMany(data, function (err, res) {
+            if (err) throw err;
+            console.log("SenderJobDetail deleted!!");
+            db.close();
+        });
+    });
+}
+
+exports.deleteSenderCurrentJob = function (req, res) {
+    var data = req.body;
+    MongoClient.connect(url, function (err, db) {
+        if (err) throw err;
+        db.collection("SenderCurrentJob").deleteMany(data, function (err, res) {
+            if (err) throw err;
+            console.log("SenderCurrentJob deleted!!");
+            db.close();
+        });
+    });
+}
+
+
+
 exports.addSenderJobDetail = function (req, res) {
     var data = req.body;
 
     MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         // var myobj = { name: "Company Inc", address: "Highway 37" };
-        db.collection("SenderJobDetail").insertOne(data, function (err, res) {
+        db.collection("SenderJobDetail").insertMany(data, function (err, res) {
             if (err) throw err;
-            console.log("1 document inserted");
+            console.log("1 addSenderJobDetail inserted");
             db.close();
         });
     });
