@@ -1,0 +1,10 @@
+install go in vscode
+go get -v github.com/nsf/gocode
+go get -u github.com/derekparker/delve/cmd/dlv
+go get gopkg.in/mgo.v2
+go get -u goji.io
+go get -v golang.org/x/tools/cmd/guru
+
+http://goinbigdata.com/how-to-build-microservice-with-mongodb-in-golang/
+
+https://github.com/upitau/goinbigdata/blob/master/examples/mongorest/main.go

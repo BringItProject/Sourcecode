@@ -1,0 +1,471 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+
+	"goji.io"
+	"goji.io/pat"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+)
+
+func ErrorWithJSON(w http.ResponseWriter, message string, code int) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(code)
+	fmt.Fprintf(w, "{message: %q}", message)
+}
+
+func ResponseWithJSON(w http.ResponseWriter, json []byte, code int) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(code)
+	w.Write(json)
+}
+
+type Book struct {
+	ISBN    string   `json:"isbn"`
+	Title   string   `json:"title"`
+	Authors []string `json:"authors"`
+	Price   string   `json:"price"`
+}
+type BringerJob struct {
+	ISBN    string   `json:"isbn"`
+	Title   string   `json:"title"`
+	Authors []string `json:"authors"`
+	Price   string   `json:"price"`
+}
+type BringerJobDetail struct {
+	ISBN    string   `json:"isbn"`
+	Title   string   `json:"title"`
+	Authors []string `json:"authors"`
+	Price   string   `json:"price"`
+}
+
+type SenderJob struct {
+	ISBN    string   `json:"isbn"`
+	Title   string   `json:"title"`
+	Authors []string `json:"authors"`
+	Price   string   `json:"price"`
+}
+type SenderJobDetail struct {
+	ISBN    string   `json:"isbn"`
+	Title   string   `json:"title"`
+	Authors []string `json:"authors"`
+	Price   string   `json:"price"`
+}
+
+func main() {
+	session, err := mgo.Dial("localhost")
+	if err != nil {
+		panic(err)
+	}
+	defer session.Close()
+
+	session.SetMode(mgo.Monotonic, true)
+	ensureIndex(session)
+
+	mux := goji.NewMux()
+	mux.HandleFunc(pat.Get("/books"), allBooks(session))
+	mux.HandleFunc(pat.Post("/books"), addBook(session))
+	mux.HandleFunc(pat.Get("/books/:isbn"), bookByISBN(session))
+	mux.HandleFunc(pat.Put("/books/:isbn"), updateBook(session))
+	mux.HandleFunc(pat.Delete("/books/:isbn"), deleteBook(session))
+	http.ListenAndServe("localhost:8080", mux)
+}
+
+func ensureIndex(s *mgo.Session) {
+	session := s.Copy()
+	defer session.Close()
+
+	c := session.DB("BringITDB").C("books")
+
+	index := mgo.Index{
+		Key:        []string{"isbn"},
+		Unique:     true,
+		DropDups:   true,
+		Background: true,
+		Sparse:     true,
+	}
+	err := c.EnsureIndex(index)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func allBooks(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		c := session.DB("BringITDB").C("books")
+
+		var books []Book
+		err := c.Find(bson.M{}).All(&books)
+		if err != nil {
+			ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
+			log.Println("Failed get all books: ", err)
+			return
+		}
+
+		respBody, err := json.MarshalIndent(books, "", "  ")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		ResponseWithJSON(w, respBody, http.StatusOK)
+	}
+}
+
+func allBringerJob(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		c := session.DB("BringITDB").C("BringerJob")
+
+		var BringerJob []BringerJob
+		err := c.Find(bson.M{}).All(&BringerJob)
+		if err != nil {
+			ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
+			log.Println("Failed get all BringerJob: ", err)
+			return
+		}
+
+		respBody, err := json.MarshalIndent(BringerJob, "", "  ")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		ResponseWithJSON(w, respBody, http.StatusOK)
+	}
+}
+
+func allBringerJobDetail(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		c := session.DB("BringITDB").C("BringerJobDetail")
+
+		var BringerJobDetail []BringerJobDetail
+		err := c.Find(bson.M{}).All(&BringerJobDetail)
+		if err != nil {
+			ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
+			log.Println("Failed get all BringerJobDetail: ", err)
+			return
+		}
+
+		respBody, err := json.MarshalIndent(BringerJobDetail, "", "  ")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		ResponseWithJSON(w, respBody, http.StatusOK)
+	}
+}
+
+func allSenderJob(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		c := session.DB("BringITDB").C("SenderJob")
+
+		var SenderJob []SenderJob
+		err := c.Find(bson.M{}).All(&SenderJob)
+		if err != nil {
+			ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
+			log.Println("Failed get all SenderJob: ", err)
+			return
+		}
+
+		respBody, err := json.MarshalIndent(SenderJob, "", "  ")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		ResponseWithJSON(w, respBody, http.StatusOK)
+	}
+}
+
+func allSenderJobDetail(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		c := session.DB("BringITDB").C("SenderJobDetail")
+
+		var SenderJobDetail []SenderJobDetail
+		err := c.Find(bson.M{}).All(&SenderJobDetail)
+		if err != nil {
+			ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
+			log.Println("Failed get all SenderJobDetail: ", err)
+			return
+		}
+
+		respBody, err := json.MarshalIndent(SenderJobDetail, "", "  ")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		ResponseWithJSON(w, respBody, http.StatusOK)
+	}
+}
+
+func addBook(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		var book Book
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&book)
+		if err != nil {
+			ErrorWithJSON(w, "Incorrect body", http.StatusBadRequest)
+			return
+		}
+
+		c := session.DB("BringITDB").C("books")
+
+		err = c.Insert(book)
+		if err != nil {
+			if mgo.IsDup(err) {
+				ErrorWithJSON(w, "Book with this ISBN already exists", http.StatusBadRequest)
+				return
+			}
+
+			ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
+			log.Println("Failed insert book: ", err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Location", r.URL.Path+"/"+book.ISBN)
+		w.WriteHeader(http.StatusCreated)
+	}
+}
+
+func addBringerJob(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		var BringerJob BringerJob
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&BringerJob)
+		if err != nil {
+			ErrorWithJSON(w, "Incorrect body", http.StatusBadRequest)
+			return
+		}
+
+		c := session.DB("BringITDB").C("BringerJobs")
+
+		err = c.Insert(BringerJob)
+		if err != nil {
+			if mgo.IsDup(err) {
+				ErrorWithJSON(w, "BringerJob with this ISBN already exists", http.StatusBadRequest)
+				return
+			}
+
+			ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
+			log.Println("Failed insert BringerJob: ", err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Location", r.URL.Path+"/"+BringerJob.ISBN)
+		w.WriteHeader(http.StatusCreated)
+	}
+}
+
+func addBringerJobDetail(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		var BringerJobDetail BringerJobDetail
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&BringerJobDetail)
+		if err != nil {
+			ErrorWithJSON(w, "Incorrect body", http.StatusBadRequest)
+			return
+		}
+
+		c := session.DB("BringITDB").C("BringerJobDetails")
+
+		err = c.Insert(BringerJobDetail)
+		if err != nil {
+			if mgo.IsDup(err) {
+				ErrorWithJSON(w, "BringerJobDetail with this ISBN already exists", http.StatusBadRequest)
+				return
+			}
+
+			ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
+			log.Println("Failed insert BringerJobDetail: ", err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Location", r.URL.Path+"/"+BringerJobDetail.ISBN)
+		w.WriteHeader(http.StatusCreated)
+	}
+}
+
+func addSenderJob(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		var SenderJob SenderJob
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&SenderJob)
+		if err != nil {
+			ErrorWithJSON(w, "Incorrect body", http.StatusBadRequest)
+			return
+		}
+
+		c := session.DB("BringITDB").C("SenderJobs")
+
+		err = c.Insert(SenderJob)
+		if err != nil {
+			if mgo.IsDup(err) {
+				ErrorWithJSON(w, "SenderJob with this ISBN already exists", http.StatusBadRequest)
+				return
+			}
+
+			ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
+			log.Println("Failed insert SenderJob: ", err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Location", r.URL.Path+"/"+SenderJob.ISBN)
+		w.WriteHeader(http.StatusCreated)
+	}
+}
+
+func addSenderJobDetail(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		var SenderJobDetail SenderJobDetail
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&SenderJobDetail)
+		if err != nil {
+			ErrorWithJSON(w, "Incorrect body", http.StatusBadRequest)
+			return
+		}
+
+		c := session.DB("BringITDB").C("SenderJobDetails")
+
+		err = c.Insert(SenderJobDetail)
+		if err != nil {
+			if mgo.IsDup(err) {
+				ErrorWithJSON(w, "SenderJobDetail with this ISBN already exists", http.StatusBadRequest)
+				return
+			}
+
+			ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
+			log.Println("Failed insert SenderJobDetail: ", err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Location", r.URL.Path+"/"+SenderJobDetail.ISBN)
+		w.WriteHeader(http.StatusCreated)
+	}
+}
+
+func bookByISBN(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		isbn := pat.Param(r, "isbn")
+
+		c := session.DB("BringITDB").C("books")
+
+		var book Book
+		err := c.Find(bson.M{"isbn": isbn}).One(&book)
+		if err != nil {
+			ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
+			log.Println("Failed find book: ", err)
+			return
+		}
+
+		if book.ISBN == "" {
+			ErrorWithJSON(w, "Book not found", http.StatusNotFound)
+			return
+		}
+
+		respBody, err := json.MarshalIndent(book, "", "  ")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		ResponseWithJSON(w, respBody, http.StatusOK)
+	}
+}
+
+func updateBook(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		isbn := pat.Param(r, "isbn")
+
+		var book Book
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&book)
+		if err != nil {
+			ErrorWithJSON(w, "Incorrect body", http.StatusBadRequest)
+			return
+		}
+
+		c := session.DB("BringITDB").C("books")
+
+		err = c.Update(bson.M{"isbn": isbn}, &book)
+		if err != nil {
+			switch err {
+			default:
+				ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
+				log.Println("Failed update book: ", err)
+				return
+			case mgo.ErrNotFound:
+				ErrorWithJSON(w, "Book not found", http.StatusNotFound)
+				return
+			}
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+func deleteBook(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		isbn := pat.Param(r, "isbn")
+
+		c := session.DB("BringITDB").C("books")
+
+		err := c.Remove(bson.M{"isbn": isbn})
+		if err != nil {
+			switch err {
+			default:
+				ErrorWithJSON(w, "Database error", http.StatusInternalServerError)
+				log.Println("Failed delete book: ", err)
+				return
+			case mgo.ErrNotFound:
+				ErrorWithJSON(w, "Book not found", http.StatusNotFound)
+				return
+			}
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}

@@ -122,6 +122,38 @@ exports.getSenderJobDetail = function (req, res) {
     });
 };
 
+exports.getSenderJobMactching = function (req, res) {
+    MongoClient.connect(url, function (err, db) {
+        if (err) throw err;
+    db.collection('SenderJobDetail').aggregate([
+        {
+
+                //( { geoNear: 'SenderJobDetail', near: {type: "Point", 
+                //coordinates: [100.98817000000001, 13.129480000000001]
+            //}, spherical: true, maxDistance: 100})  
+
+            "$geoNear": {
+                "near": {
+                    "type": "Point",
+                   // "coordinates": [parseFloat(req.params.lng), parseFloat(req.params.lat)]100.98817000000001
+                    "coordinates": [100.98817000000001, 13.129480000000001]
+                },
+                "distanceField": "distance",
+                "maxDistance": 50,
+                "spherical": true
+            }
+        },
+        //{
+        //    "$sort": { "distance": -1 } // Sort the nearest first
+        //}
+    ],
+        function (err, docs) {
+           return  res.json(docs);
+            });
+    db.close();
+    });   
+};
+
 exports.deleteBringerJobDetail = function (req, res) {
     var data = req.body;
         MongoClient.connect(url, function (err, db) {
@@ -220,7 +252,6 @@ exports.addProduct = function (req, res) {
                 productToUpdate.productName = data.productName;
                 productToUpdate.productPrice = data.productPrice;
                 productToUpdate.productStock = data.productStock;
-
                 res.send(product);
             }
 

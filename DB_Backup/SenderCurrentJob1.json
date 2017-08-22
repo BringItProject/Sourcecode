@@ -1,0 +1,11 @@
+{ 
+    "_id" : ObjectId("5996d61987e7f80fb08bc98b"), 
+    "SenderID" : "S0001", 
+    "StartPoint" : "13.368421, 101.040837", 
+    "StopPointStoptLng" : "13.080834, 100.995698", 
+    "Status" : "ACTIVE", 
+    "ItemCount" : NumberInt(0), 
+    "JobID" : "S-JID-0001", 
+    "JobDate" : "20170800000000", 
+    "JobDueDate" : "20170800000000"
+}

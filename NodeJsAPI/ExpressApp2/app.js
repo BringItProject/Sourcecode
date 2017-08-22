@@ -63,8 +63,10 @@ app.get('/SenderJobDetail/:SenderID', data.getSenderJobDetail);
 app.post('/SenderJobDetail', data.addSenderJobDetail);
 app.delete('/SenderJobDetail', data.deleteSenderJobDetail);
 
+//app.get('/SenderJobMactching/:SenderID', data.getSenderJobMactching);
 
-
+app.get('/geospatial', data.getSenderJobMactching);
+  
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
