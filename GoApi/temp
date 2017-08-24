@@ -1,0 +1,11 @@
+	mux.HandleFunc(pat.Get("/SenderJob"), allSenderJob(session))
+	mux.HandleFunc(pat.Post("/SenderJob"), addSenderJob(session))
+	mux.HandleFunc(pat.Get("/SenderJob/:jobid"), senderJobByJobID(session))
+	mux.HandleFunc(pat.Put("/SenderJob/:jobid"), updateSenderJob(session))
+	mux.HandleFunc(pat.Delete("/SenderJob/:jobid"), deleteSenderJob(session))
+
+	mux.HandleFunc(pat.Get("/SenderJobDetail"), allSenderJobDetail(session))
+	mux.HandleFunc(pat.Post("/SenderJobDetail"), addSenderJobDetail(session))
+	mux.HandleFunc(pat.Get("/SenderJobDetail/:jobid"), senderJobDetailByJobID(session))
+	mux.HandleFunc(pat.Put("/SenderJobDetail/:jobid"), updateSenderJobDetail(session))
+	mux.HandleFunc(pat.Delete("/SenderJobDetail/:jobid"), deleteSenderJobDetail(session))

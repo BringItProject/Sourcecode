@@ -70,9 +70,9 @@ function initialLoad() {
         directionsDisplay, directionsService, markerArray, stepDisplay, originPoint, destinationPoint, waypoint, map, 'route1', 'Bringer', 'B0001', 'B-JID-0001');
 
 
-    var directionsDisplay2 = new google.maps.DirectionsRenderer({ map: map });
-    calculateAndDisplayRoute(
-        directionsDisplay2, directionsService2, markerArray2, stepDisplay2, originPoint2, destinationPoint2, waypoint, map, 'route2', 'Sender', 'S0001', 'S-JID-0001');
+    //var directionsDisplay2 = new google.maps.DirectionsRenderer({ map: map });
+    //calculateAndDisplayRoute(
+    //    directionsDisplay2, directionsService2, markerArray2, stepDisplay2, originPoint2, destinationPoint2, waypoint, map, 'route2', 'Sender', 'S0001', 'S-JID-0001');
 
 
     //var directionsDisplay3 = new google.maps.DirectionsRenderer({
@@ -161,7 +161,7 @@ function calculateAndDisplayRoute(directionsDisplay, directionsService,
             else {
                 alert("Add Bringer/Sender Error.");
             }
-            showSteps(response, markerArray, stepDisplay, map, routeName, type, ID, jobID);
+            //showSteps(response, markerArray, stepDisplay, map, routeName, type, ID, jobID);
             directionsDisplay.setDirections(response);
         } else {
             // window.alert('Directions request failed due to ' + status);
@@ -173,8 +173,8 @@ function calculateAndDisplayRoute(directionsDisplay, directionsService,
 function showSteps(directionResult, markerArray, stepDisplay, map, routeName, type, ID, jobID) {
     var stepPointLat = [];
     var stepPointLng = [];
-    var bringerData = [];
-    var senderData = [];
+    var bringerData;
+    var senderData;
     var j = 0;
     var pointCount = 0;
 
@@ -197,8 +197,8 @@ function showSteps(directionResult, markerArray, stepDisplay, map, routeName, ty
 
             if (type == 'Bringer') {
 
-                    bringerData[pointCount] = {
-                        "Bringer": ID,
+                    bringerData= {
+                        "BringerID": ID,
                         "JobID": jobID,
                         "legsNo": i,
                         "pontSeq": j,
@@ -212,10 +212,11 @@ function showSteps(directionResult, markerArray, stepDisplay, map, routeName, ty
                         }
                     };
                     pointCount++;
+                    AddBringerJobDetail(bringerData);
              }
             else if ((type == 'Sender')) {
-                senderData[pointCount] = {
-                    "Sender": ID,
+                senderData = {
+                    "SenderID": ID,
                     "JobID": jobID,
                     "legsNo": i,
                     "pontSeq": j,
@@ -229,18 +230,18 @@ function showSteps(directionResult, markerArray, stepDisplay, map, routeName, ty
                     }
                 };
                 pointCount++;
-
+                AddSenderJobDetail(senderData);
             }
         }
 
-        if (type == 'Bringer') {
-            AddBringerJobDetail(bringerData);
+        //if (type == 'Bringer') {
+        //    AddBringerJobDetail(bringerData);
          
-        }
-        else if ((type == 'Sender')) {
-            AddSenderJobDetail(senderData);
+        //}
+        //else if ((type == 'Sender')) {
+        //    AddSenderJobDetail(senderData);
          
-        }
+        //}
         
         
 
@@ -264,7 +265,7 @@ var Resultxx;
 function AddBringerCurrentJob(BringerID, StartPoint, StopPoint, JobID) {
     //alert("AddBringerCurrentJob");
     var xhr = new XMLHttpRequest();
-    var url = "http://localhost:1337/BringerCurrentJob/";
+    var url = "http://localhost:8080/BringerJob";
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.onreadystatechange = function () {
@@ -273,7 +274,17 @@ function AddBringerCurrentJob(BringerID, StartPoint, StopPoint, JobID) {
             console.log(json.email + ", " + json.password);
         }
     };
-    var bringerData =  ({ "BringerID": BringerID, "StartPoint": StartPoint, "StopPointStoptLng": StopPoint, "Status": "ACTIVE", "ItemCount": 0, "JobID": JobID, "JobDate": "20170800000000", "JobDueDate": "20170800000000" });
+    var bringerData = (
+        {
+            "BringerID":    BringerID,
+            "StartPoint":   StartPoint,
+            "StopPoint":    StopPoint,
+            "Status":       "ACTIVE",
+            "ItemCount":    0,
+            "JobID":        JobID,
+            "JobDate":      "20170800000000",
+            "JobDueDate":   "20170800000000"
+        });
     var data = JSON.stringify(bringerData);
     xhr.send(data);
 }
@@ -281,7 +292,7 @@ function AddBringerCurrentJob(BringerID, StartPoint, StopPoint, JobID) {
 function AddBringerJobDetail(bringerData) {
     //alert("Add BringerJob Detail");
     var xhr = new XMLHttpRequest();
-    var url = "http://localhost:1337/BringerJobDetail/";
+    var url = "http://localhost:8080/BringerJobDetail";
        
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-type", "application/json");
@@ -297,7 +308,7 @@ function AddBringerJobDetail(bringerData) {
 function AddSenderCurrentJob(SenderID, StartPoint, StopPoint, JobID) {
     alert("AddSenderCurrentJob");
     var xhr = new XMLHttpRequest();
-    var url = "http://localhost:1337/SenderCurrentJob/";
+    var url = "http://localhost:8080/SenderJob";
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.onreadystatechange = function () {
@@ -315,7 +326,7 @@ function AddSenderCurrentJob(SenderID, StartPoint, StopPoint, JobID) {
 function AddSenderJobDetail(senderData) {
     //alert("Add BringerJob Detail");
     var xhr = new XMLHttpRequest();
-    var url = "http://localhost:1337/SenderJobDetail/";
+    var url = "http://localhost:8080/SenderJobDetail/";
 
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-type", "application/json");
@@ -329,7 +340,7 @@ function AddSenderJobDetail(senderData) {
 }
 function FindBringer(BringerID) {
 
-    var theUrl = 'http://localhost:1337/BringerCurrentJob/' + BringerID;
+    var theUrl = 'http://localhost:8080/BringerCurrentJob/' + BringerID;
     getJSON(theUrl,
         function (err, data) {
             if (err != null) {
@@ -346,7 +357,7 @@ function FindBringer(BringerID) {
 
 function DeletedAllData() {
     var xhr = new XMLHttpRequest();
-    var url = "http://localhost:1337/SenderJobDetail/";
+    var url = "http://localhost:8080/SenderJobDetail/";
     xhr.open("DELETE", url, true);
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.onreadystatechange = function () {
@@ -357,7 +368,7 @@ function DeletedAllData() {
     var data = JSON.stringify({});
     xhr.send(data);
 
-    url = "http://localhost:1337/BringerJobDetail/";
+    url = "http://localhost:8080/BringerJobDetail/";
     xhr.open("DELETE", url, true);
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.onreadystatechange = function () {
@@ -367,7 +378,7 @@ function DeletedAllData() {
     };
     xhr.send(data);
 
-    url = "http://localhost:1337/BringerCurrentJOb/";
+    url = "http://localhost:8080/BringerCurrentJOb/";
     xhr.open("DELETE", url, true);
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.onreadystatechange = function () {
@@ -377,7 +388,7 @@ function DeletedAllData() {
     };
     xhr.send(data);
 
-    url = "http://localhost:1337/SenderCurrentJOb/";
+    url = "http://localhost:8080/SenderCurrentJOb/";
     xhr.open("DELETE", url, true);
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.onreadystatechange = function () {
@@ -389,7 +400,7 @@ function DeletedAllData() {
 }
 function FindSender(SenderID) {
 
-    var theUrl = 'http://localhost:1337/SenderCurrentJob/' + SenderID;
+    var theUrl = 'http://localhost:8080/SenderCurrentJob/' + SenderID;
     getJSON(theUrl,
         function (err, data) {
             if (err != null) {
