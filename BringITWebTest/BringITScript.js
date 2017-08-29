@@ -1,0 +1,99 @@
+﻿function CreateNewJob(userId,jobId,startPoint, stopPoint,type)
+{
+    var directionsService = new google.maps.DirectionsService;
+    directionsService.route({
+        origin: startPoint,
+        destination: stopPoint,
+        travelMode: google.maps.TravelMode.DRIVING
+    }, function (response, status) {
+        if (status === 'OK') {
+            AddJOb(userId, startPoint, stopPoint, jobId, type);
+            AddJobDetail(type, response, jobId);
+        }
+         else {
+            window.alert('Directions request failed due to ' + status);
+        }
+    });
+    alert("Calculate completed for " + type + " of " + jobId);
+}
+function AddJOb(userId, startPoint, stopPoint, jobId,type) {
+    //alert("AddBringerJOb");
+    var xhr = new XMLHttpRequest();
+    if (type == 'Bringer') {
+        var url = "http://localhost:1337/BringerJob";
+    }
+    else if ((type == 'Sender')) {
+        var url = "http://localhost:1337/SenderJob";
+    }
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var json = JSON.parse(xhr.responseText);
+            console.log(json.email + ", " + json.password);
+        }
+    };
+    var Data = (
+        {
+            "userId": userId,
+            "startpoint": startPoint,
+            "stoppoint": stopPoint,
+            "status": "ACTIVE",
+            "Itemcount": 0,
+            "jobid": jobId,
+            "jobdate": "20170800000000",
+            "jobduedate": "20170800000000"
+        });
+    var data = JSON.stringify(Data);
+    xhr.send(data);
+}
+
+function AddJobDetail(type, directionResult, jobID) {
+    var stepPointLat = [];
+    var stepPointLng = [];
+    var data = [];
+    var senderData = [];
+    var j = 0;
+    var pointCount = 0;
+    var myRoute = directionResult.routes[0].legs[0];
+    for (var i = 0; i < myRoute.steps.length; i++) {
+        var dist = myRoute.steps[i].distance.value / myRoute.steps[i].lat_lngs.length
+        for (var j = 0; j < myRoute.steps[i].lat_lngs.length; j++) {
+
+            data[j] = {
+                "userid": jobID,
+                "jobid": jobID,
+                "legsno": i,
+                "pointseq": j,
+                "distance": dist,
+                "loc": {
+                    "type": "Point",
+                    "coordinates": [
+                        myRoute.steps[i].lat_lngs[j].lng(),
+                        myRoute.steps[i].lat_lngs[j].lat()
+                    ]
+                }
+            };
+            pointCount++;
+        }
+
+        var xhr = new XMLHttpRequest();
+
+        if (type == 'Bringer') {
+            var url = "http://localhost:1337/BringerJobDetail";
+
+        }
+        else if ((type == 'Sender')) {
+            var url = "http://localhost:1337/SenderJobDetail";
+        }
+
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var json = JSON.parse(xhr.responseText);
+            }
+        };
+        xhr.send(JSON.stringify(data));
+    }
+}

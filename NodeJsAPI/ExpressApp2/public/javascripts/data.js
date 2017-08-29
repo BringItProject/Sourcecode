@@ -14,22 +14,22 @@
         },
     ];
 
+
+
 var http = require('http');
 var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017/BringIT";
+var url = "mongodb://localhost:27017/bringit";
 
 exports.getProducts = function (req, res) {
 
     res.send(product);
 };
 
-exports.getBringerCurrentJob = function (req, res) {
+exports.getBringerJob = function (req, res) {
     MongoClient.connect(url, function (err, db) {
         if (err) throw err;
-
-        //var query = { BringerID: "B0001" };
         var query = { BringerID: req.params.BringerID };
-        db.collection("BringerCurrentJob").find(query).toArray(function (err, result) {
+        db.collection("bringerjob").find(query).toArray(function (err, result) {
             if (err) throw err;
             return res.json(result);
             db.close();
@@ -37,27 +37,27 @@ exports.getBringerCurrentJob = function (req, res) {
     });
 };
 
-exports.addBringerCurrentJob = function (req, res) {
+exports.addBringerJob = function (req, res) {
     var data = req.body;
 
     MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         // var myobj = { name: "Company Inc", address: "Highway 37" };
-        db.collection("BringerCurrentJob").insertOne(data, function (err, res) {
+        db.collection("bringerjob").insertOne(data, function (err, res) {
             if (err) throw err;
-            console.log("1 addBringerCurrentJob inserted");
+            console.log("1 addBringerJob inserted");
             db.close();
         });
     });
 }
 
-exports.getSenderCurrentJob = function (req, res) {
+exports.getSenderJob = function (req, res) {
     MongoClient.connect(url, function (err, db) {
         if (err) throw err;
 
         //var query = { BringerID: "B0001" };
         var query = { SenderID: req.params.SenderID };
-        db.collection("SenderCurrentJob").find(query).toArray(function (err, result) {
+        db.collection("senderjob").find(query).toArray(function (err, result) {
             if (err) throw err;
             return res.json(result);
             db.close();
@@ -66,15 +66,15 @@ exports.getSenderCurrentJob = function (req, res) {
 };
 
 
-exports.addSenderCurrentJob = function (req, res) {
+exports.addSenderJob = function (req, res) {
     var data = req.body;
 
     MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         // var myobj = { name: "Company Inc", address: "Highway 37" };
-        db.collection("SenderCurrentJob").insertOne(data, function (err, res) {
+        db.collection("senderjob").insertOne(data, function (err, res) {
             if (err) throw err;
-            console.log("1 addSenderCurrentJob inserted");
+            console.log("1 addSenderJob inserted");
             db.close();
         });
     });
@@ -86,7 +86,7 @@ exports.getBringerJobDetail = function (req, res) {
 
         //var query = { BringerID: "B0001" };
         var query = { BringerID: req.params.BringerID };
-        db.collection("BringerJobDetail").find(query).toArray(function (err, result) {
+        db.collection("bringerjobdetail").find(query).toArray(function (err, result) {
             if (err) throw err;
             return res.json(result);
             db.close();
@@ -100,7 +100,7 @@ exports.addBringerJobDetail = function (req, res) {
     MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         // var myobj = { name: "Company Inc", address: "Highway 37" };
-         db.collection("BringerJobDetail").insertMany(data, function (err, res) {
+        db.collection("bringerjobdetail").insertMany(data, function (err, res) {
             if (err) throw err;
             console.log("addBringerJobDetail inserted");
             db.close();
@@ -114,7 +114,7 @@ exports.getSenderJobDetail = function (req, res) {
 
         //var query = { BringerID: "B0001" };
         var query = { SenderID: req.params.SenderID };
-        db.collection("SenderJobDetail").find(query).toArray(function (err, result) {
+        db.collection("senderjobdetail").find(query).toArray(function (err, result) {
             if (err) throw err;
             return res.json(result);
             db.close();
@@ -122,43 +122,203 @@ exports.getSenderJobDetail = function (req, res) {
     });
 };
 
-exports.getSenderJobMactching = function (req, res) {
+exports.getJobMactching3 = function (req, res, next) {
+    MongoClient.connect(url, function (err, db) {
+        var table_data = [];
+        var query = { jobid: "S-JID-0001" };
+        db.collection('senderjobdetail').find().toArray(function (err, result) {
+
+            for (var i = 0, len = result.length; i < len; i++) {
+                var response;
+                db.collection('senderjobdetail').aggregate([
+                    {
+                        "$geoNear": {
+                            "near": {
+                                "type": "Point",
+                                "coordinates": [101.04078000000001, 13.368440000000001]
+                            },
+                            "distanceField": "distance",
+                            "maxDistance": 1000,
+                            "spherical": true
+                        }
+                    },
+                ],
+                    function (err, response) {
+                        response = response;
+            
+
+                    });
+
+                table_data[i] = response;
+                console.log(response);
+            }
+          
+            return res.json(table_data);
+        });
+    });
+}
+
+
+exports.getJobMactching2 = function (req, res, next) {
+    MongoClient.connect(url, function (err, db) {
+        var table_data = [];
+        var query = { jobid: "S-JID-0001" };
+        var disStep = 0;
+        db.collection('senderjobdetail').find().toArray(function (err, result) {
+            for (var i = 0, len = result.length; i < len; i++)
+            {
+                disStep = disStep + result[i].distance;
+                if (disStep > 500 || i == result.length )
+                {
+                    console.log(disStep);
+                    disStep = 0;
+                  var count;
+                db.collection('senderjobdetail').aggregate([
+                    {
+                        "$geoNear": {
+                            "near": {
+                                "type": "Point",
+                                "coordinates": [101.04078000000001, 13.368440000000001]
+                            },
+                            "distanceField": "distance",
+                            "maxDistance": 1000,
+                            "spherical": true
+                        }
+                    },
+                ],
+                    function (err, response) {
+                       table_data.push({
+                           response
+                        });
+                       //console.log(response);
+                       if (i == result.length) {
+                           console.log(i);
+                           return res.json(table_data);
+                         
+                    }
+                });
+
+                }
+
+            }
+            db.close();
+            
+        });
+  
+    });
+};
+
+exports.getJobMactching = function (req, res) {
+    MongoClient.connect(url, function (err, db) {
+        var query = { jobid: "S-JID-0001" };
+        db.collection("senderjobdetail").find(query).toArray(function (err, result) {
+            var response;
+
+            function doSomething() {
+                //console.log(response);
+                return res.json(response);
+                callback(response);
+            }
+
+            console.log(result.length);
+
+            
+            
+            db.collection('senderjobdetail').aggregate([
+                {
+                    "$geoNear": {
+                        "near": {
+                            "type": "Point",
+                            "coordinates": [101.04078000000001, 13.368440000000001]
+                        },
+                        "distanceField": "distance",
+                        "maxDistance": 1000,
+                        "spherical": true
+                    }
+                },
+            ],
+                function (err, docs) {
+                    response = docs;
+                    doSomething();
+                   
+                });
+    
+            //db.close();
+      
+        });
+    });
+
+
+
+};
+
+
+//exports.getJobMactching = function (req, res) {
+//    MongoClient.connect(url, function (err, db) {
+//        if (err) throw err;
+//        db.collection('senderjobdetail').aggregate([
+//            {
+//                "$geoNear": {
+//                    "near": {
+//                        "type": "Point",
+//                        // "coordinates": [parseFloat(req.params.lng), parseFloat(req.params.lat)]100.98817000000001
+//                        "coordinates": [101.04078000000001, 13.368440000000001]
+//                    },
+//                    "distanceField": "distance",
+//                    "maxDistance": 1000,
+//                    "spherical": true
+//                }
+//            },
+//        ],
+//            function (err, docs) {
+//                response = docs;
+//                return res.json(response);
+
+//            });
+//        db.close();
+//    });
+
+//};
+
+
+function geoNear(lat,lng,callback)
+{
+    var response = [];
     MongoClient.connect(url, function (err, db) {
         if (err) throw err;
-    db.collection('SenderJobDetail').aggregate([
-        {
-
-                //( { geoNear: 'SenderJobDetail', near: {type: "Point", 
-                //coordinates: [100.98817000000001, 13.129480000000001]
-            //}, spherical: true, maxDistance: 100})  
-
-            "$geoNear": {
-                "near": {
-                    "type": "Point",
-                   // "coordinates": [parseFloat(req.params.lng), parseFloat(req.params.lat)]100.98817000000001
-                    "coordinates": [100.98817000000001, 13.129480000000001]
-                },
-                "distanceField": "distance",
-                "maxDistance": 50,
-                "spherical": true
-            }
-        },
-        //{
-        //    "$sort": { "distance": -1 } // Sort the nearest first
-        //}
-    ],
-        function (err, docs) {
-           return  res.json(docs);
+        db.collection('senderjobdetail').aggregate([
+            {
+                "$geoNear": {
+                    "near": {
+                        "type": "Point",
+                        "coordinates": [101.04078000000001, 13.368440000000001]
+                    },
+                    "distanceField": "distance",
+                    "maxDistance": 50,
+                    "spherical": true
+                }
+            },
+        ],
+            function (err, docs) {
+                //response = JSON.stringify(docs);
+                //MongoClient.connect(url, function (err, db) {
+                //        db.collection("temp").insertMany(docs, function (err, res) {
+                //        db.close();
+                //    });
+                //});
+                callback(null, docs);
             });
-    db.close();
+        db.close();
     });   
-};
+ 
+}
+
 
 exports.deleteBringerJobDetail = function (req, res) {
     var data = req.body;
         MongoClient.connect(url, function (err, db) {
         if (err) throw err;
-        db.collection("BringerJobDetail").deleteMany(data, function (err, res) {
+        db.collection("bringerjobdetail").deleteMany(data, function (err, res) {
             if (err) throw err;
             console.log("BringerJobDetail deleted!!");
             db.close(); 
@@ -166,13 +326,13 @@ exports.deleteBringerJobDetail = function (req, res) {
     });
 }
 
-exports.deleteBringerCurrentJob = function (req, res) {
+exports.deleteBringerJob = function (req, res) {
     var data = req.body;
     MongoClient.connect(url, function (err, db) {
         if (err) throw err;
-        db.collection("BringerCurrentJob").deleteMany(data, function (err, res) {
+        db.collection("bringerjob").deleteMany(data, function (err, res) {
             if (err) throw err;
-            console.log("BringerCurrentJob deleted!!");
+            console.log("BringerJob deleted!!");
             db.close();
         });
     });
@@ -182,7 +342,7 @@ exports.deleteSenderJobDetail = function (req, res) {
     var data = req.body;
     MongoClient.connect(url, function (err, db) {
         if (err) throw err;
-        db.collection("SenderJobDetail").deleteMany(data, function (err, res) {
+        db.collection("senderjobdetail").deleteMany(data, function (err, res) {
             if (err) throw err;
             console.log("SenderJobDetail deleted!!");
             db.close();
@@ -190,13 +350,13 @@ exports.deleteSenderJobDetail = function (req, res) {
     });
 }
 
-exports.deleteSenderCurrentJob = function (req, res) {
+exports.deleteSenderJob = function (req, res) {
     var data = req.body;
     MongoClient.connect(url, function (err, db) {
         if (err) throw err;
-        db.collection("SenderCurrentJob").deleteMany(data, function (err, res) {
+        db.collection("senderjob").deleteMany(data, function (err, res) {
             if (err) throw err;
-            console.log("SenderCurrentJob deleted!!");
+            console.log("SenderJob deleted!!");
             db.close();
         });
     });
@@ -210,7 +370,7 @@ exports.addSenderJobDetail = function (req, res) {
     MongoClient.connect(url, function (err, db) {
         if (err) throw err;
         // var myobj = { name: "Company Inc", address: "Highway 37" };
-        db.collection("SenderJobDetail").insertMany(data, function (err, res) {
+        db.collection("senderjobdetail").insertMany(data, function (err, res) {
             if (err) throw err;
             console.log("1 addSenderJobDetail inserted");
             db.close();

@@ -42,9 +42,9 @@ app.post('/products',data.addProduct);
 app.delete('/products/:id',data.deleteProduct);
 app.put('/products/:id', data.updateProduct);
 
-app.get('/BringerCurrentJob/:BringerID', data.getBringerCurrentJob);
-app.post('/BringerCurrentJob', data.addBringerCurrentJob);
-app.delete('/BringerCurrentJob', data.deleteBringerCurrentJob);
+app.get('/BringerJob/:BringerID', data.getBringerJob);
+app.post('/BringerJob', data.addBringerJob);
+app.delete('/BringerJob', data.deleteBringerJob);
 
 app.get('/BringerJobDetail/:BringerID', data.getBringerJobDetail);
 app.post('/BringerJobDetail', data.addBringerJobDetail);
@@ -55,9 +55,9 @@ app.delete('/BringerJobDetail', data.deleteBringerJobDetail);
 //app.get('/BringerJobDetail', data.getBringerJobDetail);
 //app.post('/BringerJobDetail', data.addBringerJobDetail);
 
-app.get('/SenderCurrentJob/:SenderID', data.getSenderCurrentJob);
-app.post('/SenderCurrentJob', data.addSenderCurrentJob);
-app.delete('/SenderCurrentJob', data.deleteSenderCurrentJob);
+app.get('/SenderJob/:SenderID', data.getSenderJob);
+app.post('/SenderJob', data.addSenderJob);
+app.delete('/SenderJob', data.deleteSenderJob);
 
 app.get('/SenderJobDetail/:SenderID', data.getSenderJobDetail);
 app.post('/SenderJobDetail', data.addSenderJobDetail);
@@ -65,7 +65,8 @@ app.delete('/SenderJobDetail', data.deleteSenderJobDetail);
 
 //app.get('/SenderJobMactching/:SenderID', data.getSenderJobMactching);
 
-app.get('/geospatial', data.getSenderJobMactching);
+app.get('/getJobMactching/:userId/:jobId', data.getJobMactching);
+app.get('/getJobMactching2/:userId/:jobId', data.getJobMactching2);
   
 
 http.createServer(app).listen(app.get('port'), function(){
