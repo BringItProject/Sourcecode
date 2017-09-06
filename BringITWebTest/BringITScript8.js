@@ -8,8 +8,8 @@
     }, function (response, status) {
         if (status === 'OK') {
             AddJOb(userId, startPoint, stopPoint, jobId, type);
-            AddJobDetail(type, response, jobId, userId);
-            //AddJobDetailElastic(type, response, jobId, userId, startPoint, stopPoint);
+            //AddJobDetail(type, response, jobId, userId);
+            AddJobDetailElastic(type, response, jobId, userId, startPoint, stopPoint);
         }
          else {
             window.alert('Directions request failed due to ' + status);

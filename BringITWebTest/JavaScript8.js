@@ -26,7 +26,7 @@ function showRoute(originPoint, destinationPoint,userid,jobid,type,routeno,color
     calculateAndDisplayRoute(
     directionsDisplay, directionsService, markerArray, stepDisplay, originPoint, destinationPoint, waypoint, map, routeno, type, userid, jobid);
 
-    callbackTester(function () { CreateNewJob(userid, jobid, originPoint, destinationPoint, type); });
+    //callbackTester(function () { CreateNewJob(userid, jobid, originPoint, destinationPoint, type); });
 }
 
 function initialLoad() {
