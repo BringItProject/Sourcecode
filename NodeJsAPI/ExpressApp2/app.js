@@ -10,6 +10,7 @@ var http = require('http');
 var path = require('path');
 var data = require('./public/javascripts/data.js');
 
+
 var app = express();
 
 // all environments
@@ -66,8 +67,9 @@ app.delete('/SenderJobDetail', data.deleteSenderJobDetail);
 //app.get('/SenderJobMactching/:SenderID', data.getSenderJobMactching);
 
 app.get('/getJobMactching/:userId/:jobId', data.getJobMactching);
-app.get('/getJobMactching2/:userId/:jobId', data.getJobMactching2);
-  
+app.get('/getJobMactching2/:jobId', data.getJobMactching2);
+app.get('/test', data.test);
+
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

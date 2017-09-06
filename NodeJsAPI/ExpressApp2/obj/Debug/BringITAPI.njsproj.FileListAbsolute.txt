@@ -1,1 +1,2 @@
 C:\Users\ROBO\Documents\Visual Studio 2017\Projects\BringItProject\Sourcecode\NodeJsAPI\ExpressApp2\bin\Microsoft.NodejsTools.WebRole.dll
+C:\Users\ROBO\Documents\Visual Studio 2017\Projects\BringItProject\Sourcecode\NodeJsAPI\ExpressApp2\obj\Debug\BringITAPI.njsprojResolveAssemblyReference.cache

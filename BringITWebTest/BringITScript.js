@@ -8,13 +8,18 @@
     }, function (response, status) {
         if (status === 'OK') {
             AddJOb(userId, startPoint, stopPoint, jobId, type);
-            AddJobDetail(type, response, jobId);
+            AddJobDetail(type, response, jobId,userId);
         }
          else {
             window.alert('Directions request failed due to ' + status);
         }
     });
     alert("Calculate completed for " + type + " of " + jobId);
+}
+
+function callbackTester(callback)
+{
+    callback();
 }
 function AddJOb(userId, startPoint, stopPoint, jobId,type) {
     //alert("AddBringerJOb");
@@ -35,7 +40,7 @@ function AddJOb(userId, startPoint, stopPoint, jobId,type) {
     };
     var Data = (
         {
-            "userId": userId,
+            "userid": userId,
             "startpoint": startPoint,
             "stoppoint": stopPoint,
             "status": "ACTIVE",
@@ -48,35 +53,53 @@ function AddJOb(userId, startPoint, stopPoint, jobId,type) {
     xhr.send(data);
 }
 
-function AddJobDetail(type, directionResult, jobID) {
+function AddJobDetail(type, directionResult, jobId,userId) {
     var stepPointLat = [];
     var stepPointLng = [];
     var data = [];
     var senderData = [];
     var j = 0;
     var pointCount = 0;
+    var pointTotalCount = 0;
+    var totaldist = 0;
+    var pointdist = 0;
     var myRoute = directionResult.routes[0].legs[0];
     for (var i = 0; i < myRoute.steps.length; i++) {
+  
+        pointdist = 0;
+        pointCount = 0;
+        data = [];
         var dist = myRoute.steps[i].distance.value / myRoute.steps[i].lat_lngs.length
         for (var j = 0; j < myRoute.steps[i].lat_lngs.length; j++) {
-
-            data[j] = {
-                "userid": jobID,
-                "jobid": jobID,
-                "legsno": i,
-                "pointseq": j,
-                "distance": dist,
-                "loc": {
-                    "type": "Point",
-                    "coordinates": [
-                        myRoute.steps[i].lat_lngs[j].lng(),
-                        myRoute.steps[i].lat_lngs[j].lat()
-                    ]
-                }
-            };
-            pointCount++;
+            //if ((totaldist > 500) || (j == myRoute.steps[i].lat_lngs.length))
+            if ((pointdist > 500)||(j == myRoute.steps[i].lat_lngs.length-1)||(i==0&&j==0))
+            {
+                data[pointCount] = {
+                    "userid": userId,
+                    "jobid": jobId,
+                    "legsno": i,
+                    "pointseq": pointTotalCount,
+                    "distance": pointdist + dist,
+                    //"totaldist": totaldist, 
+                    "loc": {
+                        "type": "Point",
+                        "coordinates": [
+                            myRoute.steps[i].lat_lngs[j].lng(),
+                            myRoute.steps[i].lat_lngs[j].lat()
+                        ]
+                    }
+                };
+                pointCount++;
+                pointTotalCount++;
+                pointdist = 0;
+            }
+            else 
+            {
+                pointdist = pointdist + dist;
+            }
+            totaldist = totaldist + pointdist;
         }
-
+        //console(data.length);
         var xhr = new XMLHttpRequest();
 
         if (type == 'Bringer') {

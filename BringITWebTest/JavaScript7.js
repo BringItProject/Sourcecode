@@ -73,9 +73,45 @@ function initialLoad() {
 
 
 
-    calculateAndDisplayRoute(
-        directionsDisplay2, directionsService2, markerArray2, stepDisplay2, originPoint2, destinationPoint2, waypoint, map, 'route2', 'Sender', 'S0001', 'S-JID-0001');
+    //calculateAndDisplayRoute(
+    //    directionsDisplay2, directionsService2, markerArray2, stepDisplay2, originPoint2, destinationPoint2, waypoint, map, 'route2', 'Sender', 'S0001', 'S-JID-0001');
 
+
+
+
+
+    //callbackTester(function () { CreateNewJob("B-001", "B-001-1", "13.746611,100.494223", "12.697573,101.267060", "Bringer");});
+    //callbackTester(function () { CreateNewJob("S-001", "S-001-1", "13.368421,101.040837", "13.080834,100.995698", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-001", "S-001-2", "13.086562,100.991834", "13.031931,101.005917", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-001", "S-001-3", "13.130039,100.988506", "12.697573,101.267060", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-001", "S-001-4", "12.710340,101.229449", "12.695597,101.286847", "Sender");});
+    //callbackTester(function () { CreateNewJob("B-002", "B-002-1", "13.707041,100.543471", "13.65592,100.6222", "Bringer");});
+    //callbackTester(function () { CreateNewJob("B-002", "B-002-2", "13.578319,100.844427", "13.640325,100.680412", "Bringer");});
+    //callbackTester(function () { CreateNewJob("S-002", "S-002-1", "13.611885,100.668983", "13.596625,100.745084", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-002", "S-002-2", "13.649867,100.679786", "13.629583,100.719913", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-002", "S-002-3", "13.670873,100.616542", "13.706279,100.543931", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-002", "S-002-4", "13.694726,100.597687", "13.677430,100.604588", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-002", "S-002-5", "13.671094,100.620027", "13.668207,100.634855", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-002", "S-002-6", "13.669110,100.625235", "13.665659,100.621922", "Sender");});
+    //callbackTester(function () { CreateNewJob("B-003", "B-003-1", "18.263412,99.466594", "19.908531,99.043477", "Bringer");});
+    //callbackTester(function () { CreateNewJob("B-003", "B-003-2", "19.908531,99.043477", "18.263412,99.466594", "Bringer");});
+    //callbackTester(function () { CreateNewJob("S-003", "S-003-1", "19.859142,99.047457", "19.423997,98.974606", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-003", "S-003-2", "19.426350,98.976043", "19.436329,98.968118", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-003", "S-003-3", "18.912912,98.945685", "18.928151,98.940105", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-003", "S-003-4", "18.932063,98.940475", "18.922446,98.942086", "Sender");});
+    //callbackTester(function () { CreateNewJob("B-004", "B-004-1", "13.738982,100.511956", "13.744122,100.530566", "Bringer");});
+    //callbackTester(function () { CreateNewJob("B-004", "B-004-2", "13.745894,100.500845", "13.743956,100.543057", "Bringer");});
+    //callbackTester(function () { CreateNewJob("S-004", "S-004-1", "13.749815,100.515095", "13.748141,100.518513", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-004", "S-004-2", "13.748497,100.518228", "13.749497,100.515424", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-004", "S-004-3", "13.754281,100.528596", "13.755457,100.523741", "Sender");});
+    //callbackTester(function () { CreateNewJob("B-005", "B-005-1", "13.692902,100.545719", "14.103046,99.226377", "Bringer");});
+    //callbackTester(function () { CreateNewJob("B-005", "B-005-2", "13.695674,100.542383", "12.477164,99.895049", "Bringer");});
+    //callbackTester(function () { CreateNewJob("S-005", "S-005-1", "13.699170,100.542181", "14.017038,99.543162", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-005", "S-005-2", "13.699170,100.542181", "13.979690,99.634574", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-005", "S-005-3", "13.699170,100.542181", "13.762048,100.253972", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-005", "S-005-4", "13.699170,100.542181", "12.966286,99.899201", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-005", "S-005-5", "13.699170,100.542181", "13.064633,99.948188", "Sender");});
+    //callbackTester(function () { CreateNewJob("S-005", "S-005-6", "13.699170,100.542181", "12.741396,99.944541", "Sender");});
 
     //var directionsDisplay3 = new google.maps.DirectionsRenderer({
     //    draggable: true, // true false,
@@ -172,9 +208,9 @@ function calculateAndDisplayRoute(directionsDisplay, directionsService,
         });
 
    
-    CreateNewJob(ID, jobID, originPoint, destinationPoint, type);
+    //CreateNewJob(ID, jobID, originPoint, destinationPoint, type);
     
-    alert("Calculate completed for " + type + " of " + jobID);
+    //alert("Calculate completed for " + type + " of " + jobID);
 }
 
 function showSteps(directionResult, markerArray, stepDisplay, map, routeName, type, ID, jobID) {
@@ -197,8 +233,8 @@ function showSteps(directionResult, markerArray, stepDisplay, map, routeName, ty
             if (type == 'Bringer') {
 
                     bringerData[j]= {
-                        "BringerID": ID,
-                        "JobID": jobID,
+                        "userid": ID,
+                        "jobid": jobID,
                         "legsno": i,
                         "pointseq": j,
                         "distance": dist,
@@ -215,8 +251,8 @@ function showSteps(directionResult, markerArray, stepDisplay, map, routeName, ty
              }
             else if ((type == 'Sender')) {
                 senderData[j] = {
-                    "SenderID": ID,
-                    "JobID": jobID,
+                    "userid": ID,
+                    "jobid": jobID,
                     "legsno": i,
                     "pointseq": j,
                     "distance": dist,
@@ -339,7 +375,7 @@ function AddSenderJobDetail(senderData) {
 }
 function FindBringer(BringerID) {
 
-    var theUrl = 'http://localhost:1337/BringerJOb' + BringerID;
+    var theUrl = 'http://localhost:1337/getJobMactching2/' + BringerID;
     getJSON(theUrl,
         function (err, data) {
             if (err != null) {
